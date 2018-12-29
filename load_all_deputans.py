@@ -1,16 +1,9 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
 import time
 from selenium import webdriver
-import unicodedata
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
+
 driver = webdriver.Chrome("chromedriver.exe")
-driver.implicitly_wait(3)
+driver.implicitly_wait(10)
 driver.get('http://w1.c1.rada.gov.ua/pls/site2/p_deputat_list')
 
 all_content = driver.find_element_by_id("content-all")
