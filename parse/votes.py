@@ -75,4 +75,4 @@ class Votes (object):
             for vote in self._votes:
                 writer.writerow(vote)
 
-            return (self._file_name + '_enactment.csv', hashlib.md5(open(self._file_name + '.csv', 'rb').read()).hexdigest())
+            return (self._file_name + '_enactment.csv', hashlib.md5(open(self._file_name + '_enactment.csv', 'rb').read()).hexdigest())

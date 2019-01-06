@@ -25,4 +25,4 @@ class Enactment(object):
         time = re.search(r'\d+:\d+', date_time).group(0)
         result = list_text[3]
         print (url.encode("utf-8")+" "+date.encode("utf-8")+" "+time.encode("utf-8")+" "+ result.encode("utf-8"))
-        return [url.encode("utf-8"), date.encode("utf-8"), time.encode("utf-8"), description.encode("utf-8"), result.encode("utf-8")]
+        return ["'" + url.encode("utf-8") + "'","'" + date.encode("utf-8") + "'", "'" + time.encode("utf-8") + "'", "'" + description.encode("utf-8") + "'", "'" + result.encode("utf-8") + "'"]
