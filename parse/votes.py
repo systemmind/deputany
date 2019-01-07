@@ -36,7 +36,6 @@ class Votes (object):
 
             available = False
             self._votes = []
-            self._enactments_urls = []
             while available == False:
                 try:
                     time.sleep(1)
@@ -49,9 +48,8 @@ class Votes (object):
                         href = zname.find_element(By.TAG_NAME, 'a').get_attribute('href')
                         rezult = element.find_element(By.CLASS_NAME, 'zrez').text
                         self._votes.append([url, href.encode("utf-8"), rezult.encode("utf-8")])
-                        self._enactments_urls.append(href.encode("utf-8"))
                         print(str(href)+"  "+ rezult)
-                    
+
                     available = True
 
                 except StaleElementReferenceException:
@@ -59,20 +57,13 @@ class Votes (object):
 
                 except NoSuchElementException:
                     pass
+
         except NoSuchElementException as err:
             print(str(err))
             self._driver.quit()
 
     def save(self):
-        enactment = Enactment(self._driver)
-        with open(self._file_name + '_enactment.csv', 'w') as file:
-            writer = csv.writer(file)
-            for href in self._enactments_urls:
-                writer.writerow(enactment.sync(href))
-
         with open(self._file_name + '.csv', 'w') as file:
             writer = csv.writer(file)
             for vote in self._votes:
                 writer.writerow(vote)
-
-            return (self._file_name + '_enactment.csv', hashlib.md5(open(self._file_name + '_enactment.csv', 'rb').read()).hexdigest())
