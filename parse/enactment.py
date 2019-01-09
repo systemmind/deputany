@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 #import argparse
-import argparse
+import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import StaleElementReferenceException
@@ -17,9 +17,12 @@ class Enactment(object):
     def __init__(self, driver):
         self._driver = driver
 
-    def sync(self, test):
+    def sync(self, date_from, date_to):
+        self._date_from = date_from
+        self._date_to = date_to
         self._driver.get(STR_ENACTMENTS_URL)
         next_page_exist = True
+        stop = None
         self._enactments = []
         while next_page_exist:
             list_archve = self._driver.find_element(By.ID, STR_LIST_ARCHIVE)
@@ -28,14 +31,21 @@ class Enactment(object):
 
             for raw_date, descr in zip(dates, descriptions):
                 date = self.date_time(raw_date.text)
+                print(date)
+                if self._date_to.date() < date.date():
+                    continue
+                elif self._date_from.date() > date.date():
+                    stop = True
+                    break
+
                 descript_result = self.description_result(descr.text)
                 details = descr.find_element(By.CLASS_NAME, STR_DETAILS)
                 href = details.find_element(By.TAG_NAME, 'a').get_attribute(STR_HREF)
-                self._enactments.append([href, date[0], date[1], descript_result[0], descript_result[1]])
+                self._enactments.append([href, date.date(), date.time(), descript_result[0], descript_result[1]])
+            if stop == True:
+                break
 
             try:
-                if test:
-                    break
                 page_next = self._driver.find_element(By.CLASS_NAME, STR_PAGE_NEXT)
                 actions = ActionChains(self._driver)
                 actions.move_to_element(page_next).perform()
@@ -52,7 +62,7 @@ class Enactment(object):
                 writer.writerow(enactment)
 
     def date_time(self, text):
-        mounths = {u" СІЧНЯ ": "01",
+        months = {u" СІЧНЯ ": "01",
                    u" ЛЮТОГО ": "02",
                    u" БЕРЕЗНЯ ": "03",
                    u" КВІТНЯ ": "04",
@@ -67,12 +77,12 @@ class Enactment(object):
 
         date_str = re.search(u'^(.*)\d{4}', text).group(0)
         list_date = date_str.split(" ")
-        mounth = re.search(r'\s\D{1,}', date_str).group(0)
-        mounth = mounths[mounth]
+        month = re.search(r'\s\D{1,}', date_str).group(0)
+        month = months[month]
         time = re.search(r'\d+:\d+', text).group(0)
-        day_mounth_year = list_date[0]+"."+mounth+"."+list_date[2]
-
-        return [day_mounth_year, time]
+        day_month_year_time = list_date[0]+"."+month+"."+list_date[2]+" "+time
+        date = datetime.datetime.strptime(day_month_year_time, "%d.%m.%Y %H:%M")
+        return date
 
     def description_result(self, text):
         try:

@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import argparse
+import datetime
 import time
 from selenium import webdriver
 from enactment import Enactment
@@ -20,15 +21,17 @@ def devide_array(lst, n):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-f", "--fromd", help="select votes from  date", type=str, default="27.11.14")
-parser.add_argument("-to", "--to", help="select votes to date", type=str, default=None)
-parser.add_argument("-t", "--test", help="argument for testing", type=bool, default=False)
+parser.add_argument("-f", "--fromd", help="select votes from date", type=str, default="27.11.14")
+parser.add_argument("-t", "--tod", help="select votes to date", type=str, default=None)
 parser.add_argument("--deputats", help="argument for sync dpeputats", action='store_const', const='True', default=False)
 parser.add_argument("--enactments", help="argument for sync enactments", action='store_const', const='True', default=False)
 parser.add_argument("--threads", help="argument for amount of threads for sync enactments", type=int, default=4)
 args = parser.parse_args()
 driver = webdriver.Chrome()
 deputats = None
+date_from = datetime.datetime.strptime(args.fromd, "%d.%m.%Y")
+date_to = datetime.datetime.strptime(args.tod, "%d.%m.%Y")
+
 
 if args.deputats:
     print('--deputats = True: sync deputats')
@@ -43,6 +46,7 @@ else:
 if args.enactments:
     print('--enactment not None: sync enactments')
     enactment = Enactment(driver)
+    enactment.sync(date_from, date_to)
     enactment.save()
 
 threads_amount = args.threads
@@ -50,7 +54,7 @@ list_deps = devide_array(deputats, threads_amount)
 list_Votes = []
 
 for i in range(threads_amount):
-    list_Votes.append(Votes(str(i), list_deps[i-1], args.fromd, args.to))
+    list_Votes.append(Votes(str(i), list_deps[i-1], args.fromd, args.tod))
 
 for i in range(threads_amount):
     t = threading.Thread(target=list_Votes[i-1].sync_all)
