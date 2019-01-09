@@ -12,6 +12,7 @@ import json
 import csv
 from strings import *
 
+
 class Enactment(object):
     def __init__(self, driver):
         self._driver = driver

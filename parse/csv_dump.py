@@ -11,30 +11,49 @@ import csv
 import os
 import platform
 import os.path
+import threading
 from strings import *
 
-if platform.system() == "Linux":
-    driver = webdriver.Firefox()
-else:
-    driver = webdriver.Chrome()
-        
+
+def devide_array(lst, n):
+    return [lst[i::n] for i in xrange(n)]
+
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--start", help="select votes from  start date", type=str, default="27.11.14")
-parser.add_argument("-b", "--before", help="select votes before date", type=str, default=None)
+parser.add_argument("-f", "--fromd", help="select votes from  date", type=str, default="27.11.14")
+parser.add_argument("-to", "--to", help="select votes to date", type=str, default=None)
 parser.add_argument("-t", "--test", help="argument for testing", type=bool, default=False)
-
+parser.add_argument("--deputats", help="argument for sync dpeputats", action='store_const', const='True', default=False)
+parser.add_argument("--enactments", help="argument for sync enactments", action='store_const', const='True', default=False)
+parser.add_argument("--threads", help="argument for amount of threads for sync enactments", type=int, default=4)
 args = parser.parse_args()
-if not os.path.isfile(STR_ENACTMENTS_CSV): 
+driver = webdriver.Chrome()
+deputats = None
+
+if args.deputats:
+    print('--deputats = True: sync deputats')
+    persons = Persons()
+    deputats = persons.sync(driver)
+    persons.save()
+else:
+    print('--deputats = False: load deputats')
+    persons = Persons()
+    deputats = persons.load()
+
+if args.enactments:
+    print('--enactment not None: sync enactments')
     enactment = Enactment(driver)
-    enactment.sync(args.test)
     enactment.save()
 
-persons = Persons()
-deputats = persons.sync(driver)
-votes = Votes(driver)
-for deputat in deputats:
-    votes.sync(deputat[0], args.start, args.before)
+threads_amount = args.threads
+list_deps = devide_array(deputats, threads_amount)
+list_Votes = []
 
-persons.save()
+for i in range(threads_amount):
+    list_Votes.append(Votes(str(i), list_deps[i-1], args.fromd, args.to))
+
+for i in range(threads_amount):
+    t = threading.Thread(target=list_Votes[i-1].sync_all)
+    t.start()
+
 driver.quit()
