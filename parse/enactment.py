@@ -31,7 +31,6 @@ class Enactment(object):
 
             for raw_date, descr in zip(dates, descriptions):
                 date = self.date_time(raw_date.text)
-                print(date)
                 if self._date_to.date() < date.date():
                     continue
                 elif self._date_from.date() > date.date():
@@ -41,7 +40,7 @@ class Enactment(object):
                 descript_result = self.description_result(descr.text)
                 details = descr.find_element(By.CLASS_NAME, STR_DETAILS)
                 href = details.find_element(By.TAG_NAME, 'a').get_attribute(STR_HREF)
-                self._enactments.append([href, date.date(), date.time(), descript_result[0], descript_result[1]])
+                self._enactments.append(u"'"+href+u"'\t'"+str(date.date()).decode("utf-8")+u"'\t'"+str(date.time()).decode("utf-8")+u"'\t'"+descript_result[0]+u"'\t'"+descript_result[1]+u"'\n")
             if stop == True:
                 break
 
@@ -52,14 +51,12 @@ class Enactment(object):
                 page_next.click()
 
             except NoSuchElementException as err:
-                print(err)
                 next_page_exist = False
 
     def save(self):
         with open(STR_ENACTMENTS_CSV, 'w') as file:
-            writer = csv.writer(file)
             for enactment in self._enactments:
-                writer.writerow(enactment)
+                file.write(enactment.encode("utf-8"))
 
     def date_time(self, text):
         months = {u" СІЧНЯ ": "01",
@@ -86,9 +83,9 @@ class Enactment(object):
 
     def description_result(self, text):
         try:
-            split_text = text.split("\n")
-            description = split_text[0].encode("utf-8")
-            result = re.search(r'Рішення(.*)рийнято', split_text[2].encode("utf-8")).group(0)
+            split_text = text.split(u'\n')
+            description = split_text[0]
+            result = re.search(u'Рішення(.*)рийнято', split_text[2]).group(0)
             return [description, result]
         except IndexError as err:
-            return [description, ""]
+            return [description, u'']

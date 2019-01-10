@@ -14,6 +14,7 @@ import re
 import csv
 import hashlib
 import errno
+import os
 
 
 class Votes (object):
@@ -54,7 +55,7 @@ class Votes (object):
             for element in block_pd_list:
                 text = element.text.split("\n")
                 print(text[0].decode("utf-8"))
-                self._votes.append([url, element.find_element(By.TAG_NAME, 'a').get_attribute('href'), text[2].encode("utf-8")])
+                self._votes.append(u"'"+url+u"'\t'"+element.find_element(By.TAG_NAME, 'a').get_attribute('href')+u"'\t'"+text[2]+u"'\n")
 
         except NoSuchElementException as err:
             print(str(err))
@@ -76,6 +77,24 @@ class Votes (object):
 
     def save(self):
         with open(self._file_name + '.csv', 'w') as file:
-            writer = csv.writer(file)
             for vote in self._votes:
-                writer.writerow(vote)
+                file.write(vote.encode("utf-8"))
+
+    @staticmethod
+    def merge_files(amount):
+        data = []
+        for i in range(amount):
+            file_name = str(i)+'.csv'
+            if os.path.isfile(file_name):
+                with open(file_name, 'r') as file:
+                    for line in file:
+                        data.append(line)
+
+        with open('votes.csv', 'w') as file:
+            for line in data:
+                file.write(line)
+        
+        for i in range(amount):
+            file_name = str(i)+'.csv'
+            if os.path.isfile(file_name):
+                os.remove(file_name)
