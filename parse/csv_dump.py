@@ -22,14 +22,15 @@ def devide_array(lst, n):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--fromd", help="select votes from date", type=str, default="27.11.2014")
-parser.add_argument("-t", "--tod", help="select votes to date", type=str, default=None)
+parser.add_argument("-t", "--tod", help="select votes to date", type=str, default="22.12.2018")
 parser.add_argument("--deputats", help="argument for sync dpeputats", action='store_const', const='True', default=False)
 parser.add_argument("--enactments", help="argument for sync enactments", action='store_const', const='True', default=False)
 parser.add_argument("--threads", help="argument for amount of threads for sync enactments", type=int, default=4)
 args = parser.parse_args()
 
 chrome_options = Options()
-chrome_options.add_argument("--headless")
+#chrome_options.add_argument("--headless")
+chrome_options.add_argument("--no-sandbox")
 driver = webdriver.Chrome(chrome_options=chrome_options)
 deputats = None
 date_from = datetime.datetime.strptime(args.fromd, "%d.%m.%Y")

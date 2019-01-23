@@ -40,7 +40,7 @@ class Enactment(object):
                 descript_result = self.description_result(descr.text)
                 details = descr.find_element(By.CLASS_NAME, STR_DETAILS)
                 href = details.find_element(By.TAG_NAME, 'a').get_attribute(STR_HREF)
-                self._enactments.append(u"'"+href+u"'\t'"+str(date.date()).decode("utf-8")+u"'\t'"+str(date.time()).decode("utf-8")+u"'\t'"+descript_result[0]+u"'\t'"+descript_result[1]+u"'\n")
+                self._enactments.append(u"'"+href+u"'\t'"+str(date.date()).decode("utf-8")+u"'\t'"+str(date.time()).decode("utf-8")+u"'\t'"+descript_result[0]+u"'\t'"+descript_result[1]+u"'\t"+u"0"+u"\n")
             if stop == True:
                 break
 

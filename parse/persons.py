@@ -21,7 +21,7 @@ class Persons(object):
         for element in elements:
             title = element.find_element_by_class_name("title")
             href = title.find_element_by_css_selector('a').get_attribute('href')
-            self._names_references.append((href.encode("utf-8"), title.text.encode("utf-8")))
+            self._names_references.append((href.encode("utf-8"), title.text.encode("utf-8"), 0))
             print(href.encode("utf-8") + "---" + title.text.encode("utf-8"))
 
         return self._names_references

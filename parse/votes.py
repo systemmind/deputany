@@ -20,7 +20,8 @@ import os
 class Votes (object):
     def __init__(self, file_name, deputats, from_date, to_date):
         chrome_options = Options()
-        chrome_options.add_argument("--headless")
+        #chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
         self._file_name = file_name
         self._deputats = deputats
         self._driver = webdriver.Chrome(chrome_options=chrome_options)
