@@ -36,11 +36,9 @@ class ImportFile extends Component{
 
 function enactment (props){
   return(
-    
-      <div style={{width: "500px",
-                   height:"100px",
-                   position: "fixed",
-                    left: 600, bottom: 400}}>{props.description}</div>
+      <div style={{textAlign: "left",
+                   marginTop: "20px"}}>{props.description}
+      </div>
   )
 }
 
@@ -126,7 +124,7 @@ class TopEnactments extends Component{
     element.click();
     document.body.removeChild(element);
   }
-  
+
   send_on_server_get_result(){
     let dict = []
     fetch('http://127.0.0.1:5000/db_api/process', {
@@ -155,7 +153,7 @@ class TopEnactments extends Component{
       .then(arr => this.setState({enactments: arr, loading: false}))
       .catch(error => console.log(error))
     }
-    
+
   }
 
   render(){
@@ -173,20 +171,26 @@ class TopEnactments extends Component{
     }
     if(!candidates.length){
       return (
-        <h1>Top enactments </h1>,
-        <div>{enactment(enactments[index])}
-          <button style = {{position: "fixed", left: 990, bottom: 200}} onClick={this.index_up} >Наступний</button>
-          <button style = {{position: "fixed", left: 600, bottom: 200}} onClick={this.index_down}>Попередній</button>
-          <button style = {{position: "fixed", left: 730, bottom: 170}} onClick={this.save_user_votes}>Зберегти</button>
-          <button style = {{position: "fixed", left: 800, bottom: 200}} onClick={this.send_on_server_get_result}>Кандидати</button>
-          <button style = {{position: "fixed", left: 850, bottom: 170}} onClick={() => this.setState({load_user_votes: true})}>Завантажити</button>
-          <div name="voting" style={{position: "fixed", left: 750, bottom: 500}}>
-            <button  onClick={() => this.check_vote("За")} style={{width:"100px"}}>За</button>
-            <button  onClick={() => this.check_vote("Проти")} style={{width:"100px"}} >Проти</button>
-          </div>
-
+        <div>
+          <center>
+            <div style={{width: "60%"}}>
+              <div style={{textAlign: "center"}}>
+                <a href='#' onClick={this.save_user_votes}>Зберегти</a> | 
+                <a href='#' onClick={this.send_on_server_get_result}>Кандидати</a> | 
+                <a href='#' onClick={() => this.setState({load_user_votes: true})}>Завантажити</a>
+                <a  href='#' style = {{fontFamily: "Consolas", float: "left", fontSize: "40pt", textDecoration: "none", marginTop: "40px"}} onClick={this.index_down}> {'<'} </a>
+                <a href='#' style = {{fontFamily: "Consolas", float: "right", fontSize: "40pt", textDecoration: "none", marginTop: "40px"}} onClick={this.index_up}>{'>'} </a>
+                <div style={{ width: "80%", left: "10%", position: "relative"}}>{enactment(enactments[index])}</div>
+                <br></br>
+                <br></br>
+                <div name="voting">
+                  <button  onClick={() => this.check_vote("За")} style={{border: "none", backgroundColor: "transparent", color: 'none', fontSize: "40pt", width: "200px"}}>	&#x1f44d;</button>
+                  <button  onClick={() => this.check_vote("Проти")} style={{border: "none", backgroundColor: "transparent", color: 'none', fontSize: "40pt", width: "200px"}}>&#x1f44e; </button>
+                </div>
+              </div>
+            </div>
+          </center>
         </div>
-
       )
     }
     if(candidates.length){
@@ -197,9 +201,6 @@ class TopEnactments extends Component{
 
       )
     }
-
-
-
   }
 }
 
@@ -215,8 +216,6 @@ class App extends Component {
           <TopEnactments></TopEnactments>
         </div>
         )
-      
-          
   }
 }
 export default App;
