@@ -10,7 +10,7 @@ app = Flask(__name__)
 api = Api(app)
 try:
     # Open database connection
-    db = MySQLdb.connect("localhost", "root", "zrada", "zrada", charset='utf8', use_unicode = True )
+    db = MySQLdb.connect("localhost", "voter", "deputany", "zrada", charset='utf8', use_unicode = True )
     # prepare a cursor object using cursor() method
     cursor = db.cursor()
 except Exception as err:
@@ -22,6 +22,8 @@ except Exception as err:
 @cross_origin()
 def get_top_enactments():
     try:
+        connection = MySQLdb.connect("localhost", "root", "zrada", "zrada", charset='utf8', use_unicode = True )
+        cursor = connection.cursor()
         sql = "SELECT * FROM enactments where reiting LIKE 1"
         cursor.execute(sql)
         enactments = cursor.fetchall()
@@ -49,7 +51,8 @@ def process_user_votes():
 
 
 def process_voting(data):
-
+    connection = MySQLdb.connect("localhost", "root", "zrada", "zrada", charset='utf8', use_unicode = True )
+    cursor = connection.cursor()
     sql = "SELECT * FROM deputats WHERE candidate <> 0"
     cursor.execute(sql)
     deputats = cursor.fetchall()
