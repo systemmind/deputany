@@ -127,35 +127,49 @@ class TopEnactments extends Component{
     document.body.removeChild(element);
   }
 
-  send_on_server_get_result(){
-    let dict = []
-    fetch(`${this._url}/db_api/process`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(this.state.user_enactments)
-    })
-    .then(response => response.json())
-    .then(arr => this.setState({candidates: arr}))
-    .catch(error => console.log(error))
+  async send_on_server_get_result(){
+    try{
+      const response = await fetch(`${this._url}/db_api/process`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.state.user_enactments)
+      });
+      if (!response.ok){
+        throw new Error(response.statusText);
+      }
+      const json = await response.json();
+      this.setState({candidates: json})
+    }
+    catch(err){
+      console.error(err);
+      alert(err);
+    }
   }
 
   call_back_get_data_from_file = (data) => {
     this.setState({user_enactments: JSON.parse(data), load_user_votes: false})
   }
 
-  componentDidMount(){
-    if(!this.state.candidates.length){
+  async componentDidMount(){
+    try{
+      if(!this.state.candidates.length){
       this.setState({loading: true})
-      fetch(`${this._url}/db_api/topenactments`)
-      .then(response => response.json())
-      .then(json => json.enactments)
-      .then(arr => this.setState({enactments: arr, loading: false}))
-      .catch(error => console.log(error))
+      const response = await fetch(`${this._url}/db_api/topenactments`, {
+        method: 'GET'
+      });
+      if (!response.ok){
+        throw new Error(response.statusText);
+      }
+      const json = await response.json();
+      this.setState({enactments: json.enactments, loading: false})
+      }
     }
-
+    catch(err){
+      console.error(err);
+      alert(err);
+    }
   }
 
   render(){

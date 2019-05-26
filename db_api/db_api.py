@@ -18,7 +18,7 @@ except Exception as err:
     # disconnect from server
     db.close()
 
-@app.route('/db_api/topenactments', methods=['get'])
+@app.route('/db_api/topenactments', methods=['GET'])
 @cross_origin()
 def get_top_enactments():
     try:
@@ -41,7 +41,7 @@ def get_top_enactments():
 
     return jsonify({"enactments": list_enactments}) 
 
-@app.route('/db_api/process', methods=['post'])
+@app.route('/db_api/process', methods=['POST'])
 @cross_origin()
 def process_user_votes():
     data = request.get_json()
