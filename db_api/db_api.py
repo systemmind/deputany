@@ -22,7 +22,7 @@ except Exception as err:
 @cross_origin()
 def get_top_enactments():
     try:
-        connection = MySQLdb.connect("localhost", "root", "zrada", "zrada", charset='utf8', use_unicode = True )
+        connection = MySQLdb.connect("localhost", "voter", "deputany", "zrada", charset='utf8', use_unicode = True)
         cursor = connection.cursor()
         sql = "SELECT * FROM enactments where reiting LIKE 1"
         cursor.execute(sql)
@@ -51,7 +51,7 @@ def process_user_votes():
 
 
 def process_voting(data):
-    connection = MySQLdb.connect("localhost", "root", "zrada", "zrada", charset='utf8', use_unicode = True )
+    connection = MySQLdb.connect("localhost", "voter", "deputany", "zrada", charset='utf8', use_unicode = True)
     cursor = connection.cursor()
     sql = "SELECT * FROM deputats WHERE candidate <> 0"
     cursor.execute(sql)
