@@ -65,6 +65,7 @@ function show_candidates(candidates, len){
 class TopEnactments extends Component{
   constructor(props){
     super(props)
+    const host = window.location.hostname;
     this.state = {
       enactments: [],
       loading: true,
@@ -81,6 +82,7 @@ class TopEnactments extends Component{
   this.send_on_server_get_result = this.send_on_server_get_result.bind(this)
   this.load_user_votes = this.save_user_votes.bind(this)
   this.call_back_get_data_from_file = this.call_back_get_data_from_file.bind(this)
+  this._url = `http://${host}:5000`
   }
 
   index_up(){
@@ -127,7 +129,7 @@ class TopEnactments extends Component{
 
   send_on_server_get_result(){
     let dict = []
-    fetch('http://127.0.0.1:5000/db_api/process', {
+    fetch(`${this._url}/db_api/process`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -147,7 +149,7 @@ class TopEnactments extends Component{
   componentDidMount(){
     if(!this.state.candidates.length){
       this.setState({loading: true})
-      fetch('http://127.0.0.1:5000/db_api/topenactments')
+      fetch(`${this._url}/db_api/topenactments`)
       .then(response => response.json())
       .then(json => json.enactments)
       .then(arr => this.setState({enactments: arr, loading: false}))
