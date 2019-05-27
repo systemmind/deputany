@@ -48,14 +48,13 @@ function show_candidates(candidates, len){
                                                                  <td>{candidat[1]['name']}</td>
                                                                  <td align='center'>{candidat[1]['matches']+'/'+len}</td></tr>)
     return(
-      <div style={{position: "fixed",
-                   left:600, bottom:400}}>
-      <table border = "1">
-      <tbody>
-      <tr><th>url</th><th>ФИО</th><th>совпадения голосов</th></tr>
-      {table}
-      </tbody>
-      </table>
+      <div>
+        <table border = "1">
+          <tbody>
+            <tr><th>url</th><th>ФИО</th><th>совпадения голосов</th></tr>
+            {table}
+          </tbody>
+        </table>
       </div>
     )
   }
@@ -115,8 +114,6 @@ class TopEnactments extends Component{
       console.log(this.state.user_enactments)
   }
 
-
-  
   save_user_votes(){
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.state.user_enactments)));
@@ -211,8 +208,11 @@ class TopEnactments extends Component{
     }
     if(candidates.length){
       return (
-        <div>{show_candidates(candidates, user_enactments.length)}
-          <button style = {{position: "fixed", left: 740, bottom: 200}} onClick={() => this.setState({candidates:[]})}>Прожовжити голосування</button>
+        <div>
+          <center>
+          <div><button onClick={() => this.setState({candidates:[]})}>Продовжити голосування</button></div>
+          <div>{show_candidates(candidates, user_enactments.length)}</div>
+          </center>
         </div>
 
       )

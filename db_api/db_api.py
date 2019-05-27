@@ -8,15 +8,6 @@ from operator import itemgetter
 
 app = Flask(__name__)
 api = Api(app)
-try:
-    # Open database connection
-    db = MySQLdb.connect("localhost", "voter", "deputany", "zrada", charset='utf8', use_unicode = True )
-    # prepare a cursor object using cursor() method
-    cursor = db.cursor()
-except Exception as err:
-    print(err)
-    # disconnect from server
-    db.close()
 
 @app.route('/db_api/topenactments', methods=['GET'])
 @cross_origin()
@@ -38,46 +29,40 @@ def get_top_enactments():
                                 "time": enactment[2],
                                 "description": enactment[3],
                                 "result": enactment[4]})
-
+    connection.close()
     return jsonify({"enactments": list_enactments}) 
 
 @app.route('/db_api/process', methods=['POST'])
 @cross_origin()
 def process_user_votes():
     data = request.get_json()
-    #print(data)
-    result  = process_voting(data)
+    connection = MySQLdb.connect("localhost", "voter", "deputany", "zrada", charset='utf8', use_unicode = True)
+    result  = process_voting(data, connection)
+    connection.close()
     return result, 201
 
-
-def process_voting(data):
-    connection = MySQLdb.connect("localhost", "voter", "deputany", "zrada", charset='utf8', use_unicode = True)
+def process_voting(data, connection):
     cursor = connection.cursor()
-    sql = "SELECT * FROM deputats WHERE candidate <> 0"
+    sql = "SELECT * FROM deputats"
     cursor.execute(sql)
     deputats = cursor.fetchall()
     voting_matches = {}
-    print(len(deputats))
     for element in data:
+      sql = """SELECT * FROM voting WHERE enactment = "%s" AND vote = "'%s'";""" % (element['enactment'], element['vote'],)
+      cursor.execute(sql)
+      list_voting = list(cursor.fetchall())
+      for deputat in deputats:
+        for tupl in list_voting:
+          if tupl[0] == "'"+deputat[0]+"'":
 
-        for deputat in deputats:
-            sql = """SELECT * FROM voting WHERE person = "'%s'" AND enactment = "%s" AND vote = "'%s'";""" % (deputat[0], element['enactment'], element['vote'],)
-            print(sql)
-            cursor.execute(sql)
-            match = cursor.fetchone()
-            print(match)
-            if(match):
-                if deputat[0] in voting_matches:
-                    voting_matches[deputat[0]]['matches']+=1
+            if deputat[0] in voting_matches:
+              voting_matches[deputat[0]]['matches']+=1
 
-                else:
-                    voting_matches[deputat[0]]={'name': deputat[1], 'matches': 1}
-
+            else:
+              voting_matches[deputat[0]]={'name': deputat[1], 'matches': 1}
 
     sorted_result = sorted(voting_matches.items(), key=lambda x: x[1], reverse=True)
-    print(sorted_result)
     return jsonify(sorted_result)
-
 
 
 if __name__ == '__main__':
