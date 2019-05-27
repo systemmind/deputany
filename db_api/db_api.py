@@ -8,6 +8,7 @@ from operator import itemgetter
 
 app = Flask(__name__)
 api = Api(app)
+app.config.update(SERVER_NAME='casper.uk.to:5000')
 
 @app.route('/db_api/topenactments', methods=['GET'])
 @cross_origin()
