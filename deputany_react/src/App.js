@@ -9,7 +9,7 @@ class ImportFile extends Component{
      this.state = {
        fileReader: new FileReader()
      }
-     this.load_user_votes = this.load_user_votes.bind(this)
+     //this.load_user_votes = this.load_user_votes.bind(this)
      this.handleFile = this.handleFile.bind(this)
   }
 
@@ -18,7 +18,6 @@ class ImportFile extends Component{
     const content = this.state.fileReader.result;
     console.log(content)
     this.props.call_back(content)
-    
   }
 
   load_user_votes (file){
@@ -28,9 +27,11 @@ class ImportFile extends Component{
   }
 
   render(){
-  return (<div style={{position: "fixed", left: 650, bottom: 500}}>
-  <input type="file" id="file" accept=".txt" onChange={e => this.load_user_votes(e.target.files[0])}></input>
-  </div>)
+    return (
+      <div style={{position: "fixed", left: 650, bottom: 500}}>
+        <input type="file" id="file" accept=".txt" onChange={e => this.load_user_votes(e.target.files[0])}></input>
+      </div>
+    )
   }
 }
 
@@ -74,16 +75,15 @@ class TopEnactments extends Component{
       load_user_votes: false
     }
 
-  this.index_up = this.index_up.bind(this)
-  this.index_down = this.index_down.bind(this)
-  this.check_vote = this.check_vote.bind(this)
+  // this.check_vote = this.check_vote.bind(this)
   this.save_user_votes = this.save_user_votes.bind(this)
   this.send_on_server_get_result = this.send_on_server_get_result.bind(this)
   this.load_user_votes = this.save_user_votes.bind(this)
-  this.call_back_get_data_from_file = this.call_back_get_data_from_file.bind(this)
+  //this.call_back_get_data_from_file = this.call_back_get_data_from_file.bind(this)
   this._url = `https://${host}:5050`
   }
 
+  /*
   index_up(){
     const {index, enactments} = this.state
     if(index < enactments.length-1){
@@ -96,7 +96,22 @@ class TopEnactments extends Component{
     if(index > 0){
       this.setState({index: this.state.index-1})
     }
-  }  
+  }
+  */ 
+
+  updateIndex(){
+    const index = Math.floor(Math.random()*this._eidx.length)
+    const removed = this._eidx.splice(index,1)
+    this.setState({
+      index: removed[0],
+    });
+    /*
+    let index = this.state.index
+    if(index > 0){
+      this.setState({index: this.state.index-1})
+    }
+    */
+  }
 
   check_vote(value){
     console.log(this.state.enactments[this.state.index])
@@ -146,21 +161,36 @@ class TopEnactments extends Component{
   }
 
   call_back_get_data_from_file = (data) => {
-    this.setState({user_enactments: JSON.parse(data), load_user_votes: false})
+    try{
+      const json = JSON.parse(data);
+      for (let vote of json){
+        const item = this.state.enactments.find((item)=>{ return item.url == vote.enactment })
+        const index = this.state.enactments.indexOf(item)
+        this._eidx.splice(index, 1);
+      }
+      this.setState({user_enactments: json, load_user_votes: false})
+    }
+    catch(err){
+      alert(`${err}`)
+    }
   }
 
   async componentDidMount(){
     try{
       if(!this.state.candidates.length){
-      this.setState({loading: true})
-      const response = await fetch(`${this._url}/db_api/topenactments`, {
-        method: 'GET'
-      });
-      if (!response.ok){
-        throw new Error(response.statusText);
-      }
-      const json = await response.json();
-      this.setState({enactments: json.enactments, loading: false})
+        this.setState({loading: true})
+        const response = await fetch(`${this._url}/db_api/topenactments`, {
+          method: 'GET'
+        });
+        if (!response.ok){
+          throw new Error(response.statusText);
+        }
+        const json = await response.json();
+        this._eidx = json.enactments.map((x, i)=>{ return i; });
+        this.setState({
+          enactments: json.enactments,
+          loading: false
+        })
       }
     }
     catch(err){
@@ -190,14 +220,22 @@ class TopEnactments extends Component{
               <div style={{textAlign: "center"}}>
                 <a href='#' onClick={this.save_user_votes}>Зберегти</a> | 
                 <a href='#' onClick={() => this.setState({load_user_votes: true})}>Завантажити</a>
-                <a  href='#' style = {{fontFamily: "Consolas", float: "left", fontSize: "40pt", textDecoration: "none", marginTop: "40px"}} onClick={this.index_down}> {'<'} </a>
-                <a href='#' style = {{fontFamily: "Consolas", float: "right", fontSize: "40pt", textDecoration: "none", marginTop: "40px"}} onClick={this.index_up}>{'>'} </a>
                 <div style={{ width: "80%", left: "10%", position: "relative"}}>{enactment(enactments[index])}</div>
                 <br></br>
                 <br></br>
                 <div name="voting">
-                  <button  onClick={() => this.check_vote("За")} style={{border: "none", backgroundColor: "transparent", color: 'none', fontSize: "40pt", width: "200px"}}>	&#x1f44d;</button>
-                  <button  onClick={() => this.check_vote("Проти")} style={{border: "none", backgroundColor: "transparent", color: 'none', fontSize: "40pt", width: "200px"}}>&#x1f44e; </button>
+                  <button  onClick={() => {
+                      this.check_vote("За")
+                      this.updateIndex()
+                    }}
+                    style={{border: "none", backgroundColor: "transparent", color: 'none', fontSize: "40pt", width: "200px"}}
+                  >&#x1f44d;</button>
+                  <button  onClick={() => {
+                      this.check_vote("Проти")
+                      this.updateIndex()
+                    }}
+                    style={{border: "none", backgroundColor: "transparent", color: 'none', fontSize: "40pt", width: "200px"}}
+                  >&#x1f44e; </button>
                 </div>
                 <div>
                   <p>&nbsp;</p>

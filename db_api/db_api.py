@@ -16,7 +16,8 @@ def get_top_enactments():
     try:
         connection = MySQLdb.connect("localhost", "voter", "deputany", "zrada", charset='utf8', use_unicode = True)
         cursor = connection.cursor()
-        sql = "SELECT * FROM enactments where reiting LIKE 1"
+        #sql = "SELECT * FROM enactments where reiting LIKE 1"
+        sql = "SELECT * FROM enactments"
         cursor.execute(sql)
         enactments = cursor.fetchall()
         list_enactments = []
