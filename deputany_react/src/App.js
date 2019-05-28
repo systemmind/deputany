@@ -81,7 +81,7 @@ class TopEnactments extends Component{
   this.send_on_server_get_result = this.send_on_server_get_result.bind(this)
   this.load_user_votes = this.save_user_votes.bind(this)
   this.call_back_get_data_from_file = this.call_back_get_data_from_file.bind(this)
-  this._url = `http://${host}:5000`
+  this._url = `https://${host}:5050`
   }
 
   index_up(){
@@ -189,7 +189,6 @@ class TopEnactments extends Component{
             <div style={{width: "60%"}}>
               <div style={{textAlign: "center"}}>
                 <a href='#' onClick={this.save_user_votes}>Зберегти</a> | 
-                <a href='#' onClick={this.send_on_server_get_result}>Кандидати</a> | 
                 <a href='#' onClick={() => this.setState({load_user_votes: true})}>Завантажити</a>
                 <a  href='#' style = {{fontFamily: "Consolas", float: "left", fontSize: "40pt", textDecoration: "none", marginTop: "40px"}} onClick={this.index_down}> {'<'} </a>
                 <a href='#' style = {{fontFamily: "Consolas", float: "right", fontSize: "40pt", textDecoration: "none", marginTop: "40px"}} onClick={this.index_up}>{'>'} </a>
@@ -199,6 +198,19 @@ class TopEnactments extends Component{
                 <div name="voting">
                   <button  onClick={() => this.check_vote("За")} style={{border: "none", backgroundColor: "transparent", color: 'none', fontSize: "40pt", width: "200px"}}>	&#x1f44d;</button>
                   <button  onClick={() => this.check_vote("Проти")} style={{border: "none", backgroundColor: "transparent", color: 'none', fontSize: "40pt", width: "200px"}}>&#x1f44e; </button>
+                </div>
+                <div>
+                  <p>&nbsp;</p>
+                  <button onClick={this.send_on_server_get_result}
+                    style={{
+                      border: "solid gray 1px",
+                      borderRadius: 5,
+                      background: "none",
+                      fontSize: "24px"
+                    }}
+                  >
+                     Підрахувати
+                  </button>
                 </div>
               </div>
             </div>

@@ -8,7 +8,7 @@ Restart=always
 RestartSec=1
 User=daemon
 WorkingDirectory=/opt/deputany/db_api
-ExecStart=/bin/python /opt/deputany/db_api/db_api.py
+ExecStart=/usr/bin/python /opt/deputany/db_api/db_api.py
 
 [Install]
 WantedBy=multi-user.target

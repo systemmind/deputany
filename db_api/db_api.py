@@ -8,7 +8,7 @@ from operator import itemgetter
 
 app = Flask(__name__)
 api = Api(app)
-app.config.update(SERVER_NAME='casper.uk.to:5000')
+app.config.update(SERVER_NAME='casper.thehappinessatworkproject.com:5050')
 
 @app.route('/db_api/topenactments', methods=['GET'])
 @cross_origin()
@@ -67,7 +67,7 @@ def process_voting(data, connection):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    context = ('cert/server.crt', 'cert/server.key')
+    app.run(debug=False, ssl_context=context)
 
 
-db.close()
